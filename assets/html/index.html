@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Whiley on the Web!</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/ace.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/mode-whiley.js"></script>
+    <script type="text/javascript">
+        var root_url = "${ROOT_URL}";
+        var error = "${ERROR}";
+        var redirect = "${REDIRECT}";
+    </script>
+    <script type="text/javascript" src="js/whileyweb.js"></script>
+    <script type="text/javascript">
+        window.onbeforeunload = function(){
+ 		return 'Are you sure you want to leave Whiley on the Web? Changes will not be saved.';
+	};
+    </script>
+</head>
+<body>
+    <div id="container">
+        <div id="content">
+            <p>From this page, you can run Whiley programs in your browser!  For more on Whiley, visit <a href="http://whiley.org">whiley.org</a>.</p>
+            <div id="code">{{ CODE }}</div>
+            <section id="toolbar">
+                <button type="button" onClick="save();" title="Create a permalink of this program to share with others.">Share</button>
+                <button type="button" onClick="compile();" title="Compile your program to check it is correct.">Compile</button>
+                <button type="button" onClick="run();" title="Run your program to produce some output!">Run</button>
+                <input id="verification" type="checkBox" checked="checked" title="Enable or disable compile-time verification">Enable Verification</input>
+                <img id="spinner" src="images/loading.gif" />
+            </section>
+            <div id="messages"></div>
+            <textarea id="console" readonly="readonly"></textarea>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-5582165-5");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+</body>
+</html>
