@@ -86,23 +86,22 @@ function compile() {
     var console = document.getElementById("console");
     var verify = document.getElementById("verification");
     var request = { code: editor.getValue(), verify: verify.checked };
-    $.post(root_url + "/compile", request, function(response) {
+    $.post("/compile", JSON.stringify(request), function(response) {
         clearMessages();
         console.value = "";
         $("#spinner").hide();
-        var response = $.parseJSON(response);
-        if(response.result == "success") {
+	if(response.result == "error") {
             clearErrors(true);
-            addMessage("success", "Compiled successfully.");
+            addMessage("error", response.error);
         } else if(response.result == "errors") {
             var errors = response.errors;
             showErrors(errors);
             addMessage("error", "Compilation failed: " + errors.length + " error" + (errors.length > 1 ? "s." : "."));
-        } else if(response.result == "error") {
+        } else if(response.result == "success") {
             clearErrors(true);
-            addMessage("error", response.error);
-        }
-    });
+            addMessage("success", "Compiled successfully.");
+        } 
+    },"json");
     $("#spinner").show();
 }
 
@@ -112,7 +111,7 @@ function compile() {
 function run() {
     var console = document.getElementById("console");
     var request = { code: editor.getValue() };
-    $.post(root_url + "/run", request, function(response) {
+    $.post("/run", JSON.stringify(request), function(response) {
         clearMessages();
         console.value = "";
         $("#spinner").hide();
@@ -138,7 +137,7 @@ function run() {
  */
 function save() {
     var request = { code: editor.getValue() };
-    $.post(root_url + "/save", request, function(response) {
+    $.post("/save", JSON.stringify(request), function(response) {
         clearMessages();
         var response = $.parseJSON(response);
         $("#spinner").hide();
@@ -185,7 +184,7 @@ $(document).ready(function() {
         error_message.show().delay(2000).fadeOut(500, function() {
             // If the user should be redirected to the main page (due to invalid ID for example), do so.
             if(redirect == "YES") {
-                window.location.replace(root_url + "/");
+                window.location.replace("/");
             }
         });
     }
