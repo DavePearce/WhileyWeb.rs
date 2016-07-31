@@ -3,7 +3,7 @@ extern crate rustc_serialize;
 
 use std::collections::HashMap;
 use nickel::status::StatusCode;
-use nickel::{Nickel, Request, Response, MiddlewareResult, HttpRouter, QueryString, StaticFilesHandler, JsonBody, MediaType};
+use nickel::{Nickel, Request, Response, MiddlewareResult, HttpRouter, StaticFilesHandler, JsonBody, MediaType};
 use rustc_serialize::json;
 
 // =============================================================
@@ -20,20 +20,23 @@ static CODE: &'static str  = "import whiley.lang.System\n\nmethod main(System.Co
 #[derive(RustcDecodable, RustcEncodable)]
 struct CompileRequest {
     code: String,
-    verify: String
+    verify: bool,
 }
 
 #[derive(RustcDecodable, RustcEncodable)]
 struct CompileResponse {
-    result: String
+    result: String,
 }
 
 fn compile<'a>(request: &mut Request, mut response: Response<'a>) -> MiddlewareResult<'a> {
-    //let cr = request.json_as::<CompileRequest>().unwrap();
-    
+    // Decode JSON request for processing
+    let cr = request.json_as::<CompileRequest>().unwrap();
+
+    // Create JSON response
     let object = CompileResponse {
         result: "success".to_string(),
     };
+    // Encode and send response
     let json_obj = json::encode(&object).unwrap();
     response.set(MediaType::Json);
     response.set(StatusCode::Ok);    
@@ -49,7 +52,7 @@ fn main() {
     let mut server = Nickel::new();
 
     // Setup route for index which displays the main page.
-    server.get("/", middleware! { |request, response|
+    server.get("/", middleware! { |_, response|
         let mut data = HashMap::new();
 	data.insert("CODE", CODE);	
 	return response.render("assets/html/index.html", &data)
