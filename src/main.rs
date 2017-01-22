@@ -1,9 +1,13 @@
 extern crate rustc_serialize;
 #[macro_use] extern crate nickel;
 
+use std::io;
+use std::io::prelude::*;
 use std::collections::HashMap;
+use std::fs::File;
+
 use nickel::status::StatusCode;
-use nickel::{Nickel, Request, Response, MiddlewareResult, HttpRouter, StaticFilesHandler, JsonBody, MediaType};
+use nickel::{Nickel, NickelError, Request, Response, MiddlewareResult, HttpRouter, StaticFilesHandler, JsonBody, MediaType};
 use rustc_serialize::json;
 
 // =============================================================
@@ -31,7 +35,14 @@ struct CompileResponse {
 fn compile<'a>(request: &mut Request, mut response: Response<'a>) -> MiddlewareResult<'a> {
     // Decode JSON request for processing
     let cr = request.json_as::<CompileRequest>().unwrap();
-
+    // Write code to file for use in compilation
+    let r = File::create("main.whiley");
+    if r.is_err() {
+        return Err(NickelError::new(response,"Error writing temporary file", StatusCode::BadRequest));
+    }
+    let r = r.unwrap().write_all(cr.code.as_bytes());
+    // Perform compilation
+    
     // Create JSON response
     let object = CompileResponse {
         result: "success".to_string(),
