@@ -4,5 +4,5 @@ version = "0.1.0"
 authors = ["DavePearce <david.pearce@ecs.vuw.ac.nz>"]
 
 [dependencies]
-nickel = "0.8.1"
+nickel = "*"
 rustc-serialize = "*"

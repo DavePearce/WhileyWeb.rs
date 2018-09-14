@@ -1,7 +1,6 @@
 extern crate rustc_serialize;
 #[macro_use] extern crate nickel;
 
-use std::io;
 use std::io::prelude::*;
 use std::collections::HashMap;
 use std::fs::File;
@@ -30,6 +29,12 @@ struct CompileRequest {
 #[derive(RustcDecodable, RustcEncodable)]
 struct CompileResponse {
     result: String,
+}
+
+fn index<'mw, 'conn>(_req: &mut Request<'mw, 'conn>, res: Response<'mw>) -> MiddlewareResult<'mw> {
+    let mut data = HashMap::<&str, &str>::new();
+    data.insert("CODE", CODE);	
+    return res.render("assets/html/index.html", &data)
 }
 
 fn compile<'a>(request: &mut Request, mut response: Response<'a>) -> MiddlewareResult<'a> {
@@ -61,18 +66,11 @@ fn compile<'a>(request: &mut Request, mut response: Response<'a>) -> MiddlewareR
 
 fn main() {
     let mut server = Nickel::new();
-
     // Setup route for index which displays the main page.
-    server.get("/", middleware! { |_, response|
-        let mut data = HashMap::new();
-	data.insert("CODE", CODE);	
-	return response.render("assets/html/index.html", &data)
-    });    
-
+    server.get("/", index);    
     // Setup route for compilation service.  This allows Whiley files
     // to be compiled and returns a JSON response.
-    server.post("/compile", compile);
-   
+    server.post("/compile", compile);   
     // Configure utilisation options
     server.utilize(StaticFilesHandler::new("assets/"));
     // Done
